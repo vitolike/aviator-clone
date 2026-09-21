@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,19 +117,19 @@
       <div class="kpi-sub">Total Wagered - Total Paid</div>
     </div>
     <div class="kpi-card cyan">
-      <div class="kpi-label">Total Volume Apostado</div>
+      <div class="kpi-label">Total Wagered Volume</div>
       <div class="kpi-value" id="kpi_wagered">$0.00</div>
-      <div class="kpi-sub" id="kpi_bets_count">0 apostas registradas</div>
+      <div class="kpi-sub" id="kpi_bets_count">0 bets recorded</div>
     </div>
     <div class="kpi-card purple">
-      <div class="kpi-label">RTP Real Calculado</div>
+      <div class="kpi-label">Calculated Actual RTP</div>
       <div class="kpi-value" id="kpi_real_rtp">97.00%</div>
-      <div class="kpi-sub" id="kpi_cfg_rtp">RTP Teórico: 97.0%</div>
+      <div class="kpi-sub" id="kpi_cfg_rtp">Theoretical RTP: 97.0%</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">Rodadas & Jogadores</div>
+      <div class="kpi-label">Rounds & Players</div>
       <div class="kpi-value" id="kpi_users_count">0</div>
-      <div class="kpi-sub" id="kpi_rounds_count">0 rodadas concluídas</div>
+      <div class="kpi-sub" id="kpi_rounds_count">0 completed rounds</div>
     </div>
   </section>
 
@@ -139,69 +139,69 @@
     <!-- Game Control Panel -->
     <div class="panel-card">
       <div class="panel-header">
-        <h2 class="panel-title"><span class="material-symbols-outlined">tune</span> Controle Ao Vivo da Rodada</h2>
-        <span id="force_indicator" style="font-size: 11px; color: var(--accent-green); font-weight: 700;">Modo: Provably Fair Auto</span>
+        <h2 class="panel-title"><span class="material-symbols-outlined">tune</span> Live Round Control</h2>
+        <span id="force_indicator" style="font-size: 11px; color: var(--accent-green); font-weight: 700;">Mode: Provably Fair Auto</span>
       </div>
 
       <div class="form-group">
-        <label class="form-label">Forçar Multiplicador da Próxima Rodada (Crash Force):</label>
+        <label class="form-label">Force Next Round Multiplier (Crash Force):</label>
         <div style="display: flex; gap: 8px;">
-          <input type="number" step="0.01" min="1.00" class="form-input" id="force_mult_input" placeholder="Ex: 2.50 ou 1.00 (Instant Crash)">
-          <button type="button" class="btn" id="btn_apply_force">Aplicar</button>
+          <input type="number" step="0.01" min="1.00" class="form-input" id="force_mult_input" placeholder="E.g.: 2.50 or 1.00 (Instant Crash)">
+          <button type="button" class="btn" id="btn_apply_force">Apply</button>
         </div>
         <div class="preset-row">
-          <button type="button" class="preset-pill" onclick="setForceVal('1.00')">1.00x (Crash Imediato)</button>
+          <button type="button" class="preset-pill" onclick="setForceVal('1.00')">1.00x (Instant Crash)</button>
           <button type="button" class="preset-pill" onclick="setForceVal('1.25')">1.25x</button>
           <button type="button" class="preset-pill" onclick="setForceVal('2.00')">2.00x</button>
           <button type="button" class="preset-pill" onclick="setForceVal('5.00')">5.00x</button>
           <button type="button" class="preset-pill" onclick="setForceVal('10.00')">10.00x</button>
-          <button type="button" class="preset-pill" onclick="setForceVal('0')">Resetar (Auto)</button>
+          <button type="button" class="preset-pill" onclick="setForceVal('0')">Reset (Auto)</button>
         </div>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
         <div class="form-group">
-          <label class="form-label">RTP Global do Sistema:</label>
+          <label class="form-label">Global System RTP:</label>
           <select class="form-select" id="setting_rtp">
-            <option value="98.0">98.0% (Alto Retorno)</option>
-            <option value="97.0" selected>97.0% (Padrão Oficial Spribe)</option>
+            <option value="98.0">98.0% (High Return)</option>
+            <option value="97.0" selected>97.0% (Official Spribe Default)</option>
             <option value="95.0">95.0%</option>
             <option value="92.0">92.0%</option>
-            <option value="88.0">88.0% (Margem da Casa Aumentada)</option>
+            <option value="88.0">88.0% (Increased House Margin)</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Tempo de Aposta (Countdown):</label>
+          <label class="form-label">Betting Time (Countdown):</label>
           <select class="form-select" id="setting_countdown">
-            <option value="4000">4 Segundos</option>
-            <option value="5000" selected>5 Segundos (Padrão)</option>
-            <option value="7000">7 Segundos</option>
+            <option value="4000">4 Seconds</option>
+            <option value="5000" selected>5 Seconds (Default)</option>
+            <option value="7000">7 Seconds</option>
           </select>
         </div>
       </div>
 
-      <button type="button" class="btn btn-secondary btn-block" id="btn_save_settings">Salvar Configurações Globais</button>
+      <button type="button" class="btn btn-secondary btn-block" id="btn_save_settings">Save Global Settings</button>
     </div>
 
     <!-- Seamless Session Generator -->
     <div class="panel-card">
       <div class="panel-header">
-        <h2 class="panel-title"><span class="material-symbols-outlined">person_add</span> Criador de Sessões de Jogador</h2>
-        <span style="font-size: 11px; color: var(--text-dim);">API Seamless / Integrador</span>
+        <h2 class="panel-title"><span class="material-symbols-outlined">person_add</span> Player Session Creator</h2>
+        <span style="font-size: 11px; color: var(--text-dim);">Seamless API / Integrator</span>
       </div>
 
       <div class="form-group">
-        <label class="form-label">Nome do Jogador / Apelido:</label>
-        <input type="text" class="form-input" id="sess_username" value="Piloto_Vip">
+        <label class="form-label">Player Name / Nickname:</label>
+        <input type="text" class="form-input" id="sess_username" value="Vip_Pilot">
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
         <div class="form-group">
-          <label class="form-label">Saldo Inicial:</label>
+          <label class="form-label">Initial Balance:</label>
           <input type="number" class="form-input" id="sess_balance" value="1000.00" step="10">
         </div>
         <div class="form-group">
-          <label class="form-label">Moeda:</label>
+          <label class="form-label">Currency:</label>
           <select class="form-select" id="sess_currency">
             <option value="USD" selected>USD ($)</option>
             <option value="BRL">BRL (R$)</option>
@@ -211,15 +211,15 @@
       </div>
 
       <button type="button" class="btn btn-green btn-block" id="btn_create_session">
-        <span class="material-symbols-outlined">rocket_launch</span> Gerar Sessão e Link do Jogo
+        <span class="material-symbols-outlined">rocket_launch</span> Generate Session & Game Link
       </button>
 
       <div class="session-box" id="session_result_box">
-        <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 4px;">URL da Sessão Gerada:</div>
+        <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 4px;">Generated Session URL:</div>
         <div class="session-url" id="session_url_display"></div>
         <div class="session-actions">
-          <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="copySessionUrl()">Copiar Link</button>
-          <a href="#" target="_blank" class="btn btn-green" style="flex: 1; text-decoration: none; justify-content: center;" id="session_play_link">Jogar Agora</a>
+          <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="copySessionUrl()">Copy Link</button>
+          <a href="#" target="_blank" class="btn btn-green" style="flex: 1; text-decoration: none; justify-content: center;" id="session_play_link">Play Now</a>
         </div>
       </div>
     </div>
@@ -229,24 +229,24 @@
   <!-- Historical Rounds & Provably Fair Audit Table -->
   <div class="panel-card" style="margin-bottom: 24px;">
     <div class="panel-header">
-      <h2 class="panel-title"><span class="material-symbols-outlined">history</span> Auditoria de Rodadas & Provably Fair</h2>
-      <button type="button" class="btn btn-secondary" onclick="loadRounds()">Atualizar</button>
+      <h2 class="panel-title"><span class="material-symbols-outlined">history</span> Round Audit & Provably Fair</h2>
+      <button type="button" class="btn btn-secondary" onclick="loadRounds()">Refresh</button>
     </div>
     <div class="table-responsive">
       <table>
         <thead>
           <tr>
-            <th>ID Rodada</th>
-            <th>Multiplicador Final</th>
+            <th>Round ID</th>
+            <th>Final Multiplier</th>
             <th>Status</th>
-            <th>Hash SHA-256 (Compromisso)</th>
-            <th>Server Seed (Revelado)</th>
+            <th>SHA-256 Hash (Commitment)</th>
+            <th>Server Seed (Revealed)</th>
             <th>Nonce</th>
-            <th>Data/Hora</th>
+            <th>Date/Time</th>
           </tr>
         </thead>
         <tbody id="rounds_tbody">
-          <tr><td colspan="7" style="text-align:center;">Carregando rodadas...</td></tr>
+          <tr><td colspan="7" style="text-align:center;">Loading rounds...</td></tr>
         </tbody>
       </table>
     </div>
@@ -255,25 +255,25 @@
   <!-- Recent Bets Ledger -->
   <div class="panel-card">
     <div class="panel-header">
-      <h2 class="panel-title"><span class="material-symbols-outlined">payments</span> Livro Razão de Apostas (Live Ledger)</h2>
-      <button type="button" class="btn btn-secondary" onclick="loadBets()">Atualizar</button>
+      <h2 class="panel-title"><span class="material-symbols-outlined">payments</span> Bet Ledger (Live Ledger)</h2>
+      <button type="button" class="btn btn-secondary" onclick="loadBets()">Refresh</button>
     </div>
     <div class="table-responsive">
       <table>
         <thead>
           <tr>
-            <th>ID Aposta</th>
-            <th>Jogador</th>
-            <th>Rodada</th>
-            <th>Valor Apostado</th>
-            <th>Saque (X)</th>
-            <th>Prêmio Pago</th>
+            <th>Bet ID</th>
+            <th>Player</th>
+            <th>Round</th>
+            <th>Bet Amount</th>
+            <th>Cash Out (X)</th>
+            <th>Prize Paid</th>
             <th>Status</th>
-            <th>Horário</th>
+            <th>Time</th>
           </tr>
         </thead>
         <tbody id="bets_tbody">
-          <tr><td colspan="8" style="text-align:center;">Carregando apostas...</td></tr>
+          <tr><td colspan="8" style="text-align:center;">Loading bets...</td></tr>
         </tbody>
       </table>
     </div>
@@ -296,25 +296,25 @@
         const { stats, live } = data;
         document.getElementById('kpi_ggr').textContent = `$${fmt(stats.ggr)}`;
         document.getElementById('kpi_wagered').textContent = `$${fmt(stats.totalWagered)}`;
-        document.getElementById('kpi_bets_count').textContent = `${stats.totalBets} apostas registradas`;
+        document.getElementById('kpi_bets_count').textContent = `${stats.totalBets} bets recorded`;
         document.getElementById('kpi_real_rtp').textContent = `${stats.realRtp.toFixed(2)}%`;
-        document.getElementById('kpi_cfg_rtp').textContent = `RTP Teórico: ${stats.configuredRtp}%`;
-        document.getElementById('kpi_users_count').textContent = `${stats.totalUsers} jogadores`;
-        document.getElementById('kpi_rounds_count').textContent = `${stats.totalRounds} rodadas concluídas`;
+        document.getElementById('kpi_cfg_rtp').textContent = `Theoretical RTP: ${stats.configuredRtp}%`;
+        document.getElementById('kpi_users_count').textContent = `${stats.totalUsers} players`;
+        document.getElementById('kpi_rounds_count').textContent = `${stats.totalRounds} completed rounds`;
 
         // Live badge
         const dot = document.getElementById('live_dot');
         const text = document.getElementById('live_round_text');
         dot.className = `pulse-dot ${live.phase.toLowerCase()}`;
-        text.textContent = `Rodada #${live.roundId} | ${live.phase} ${live.phase === 'FLYING' ? live.mult.toFixed(2) + 'x' : ''}`;
+        text.textContent = `Round #${live.roundId} | ${live.phase} ${live.phase === 'FLYING' ? live.mult.toFixed(2) + 'x' : ''}`;
 
         // Force indicator
         const ind = document.getElementById('force_indicator');
         if (stats.forceNextCrash > 0) {
-          ind.textContent = `PRÓXIMO MULTIPLICADOR TRAVADO EM ${stats.forceNextCrash.toFixed(2)}x!`;
+          ind.textContent = `NEXT MULTIPLIER LOCKED AT ${stats.forceNextCrash.toFixed(2)}x!`;
           ind.style.color = 'var(--accent-red)';
         } else {
-          ind.textContent = 'Modo: Provably Fair Auto';
+          ind.textContent = 'Mode: Provably Fair Auto';
           ind.style.color = 'var(--accent-green)';
         }
       } catch (e) {
@@ -339,7 +339,7 @@
             <td style="font-family: monospace; font-size: 11px;">${r.hash.slice(0, 16)}...</td>
             <td style="font-family: monospace; font-size: 11px;">${r.server_seed ? r.server_seed.slice(0, 16) + '...' : '—'}</td>
             <td>${r.nonce}</td>
-            <td>${new Date(r.started_at).toLocaleTimeString('pt-BR')}</td>
+            <td>${new Date(r.started_at).toLocaleTimeString('en-US')}</td>
           </tr>
         `).join('');
       } catch (e) {
@@ -367,7 +367,7 @@
               $${fmt(b.win_amount)}
             </td>
             <td><span class="badge-status badge-${b.status}">${b.status}</span></td>
-            <td>${new Date(b.created_at).toLocaleTimeString('pt-BR')}</td>
+            <td>${new Date(b.created_at).toLocaleTimeString('en-US')}</td>
           </tr>
         `).join('');
       } catch (e) {
@@ -386,7 +386,7 @@
         headers,
         body: JSON.stringify({ force_next_crash: val })
       });
-      alert(val > 0 ? `Próxima rodada forçada para ${val.toFixed(2)}x!` : 'Modo automático Provably Fair reativado.');
+      alert(val > 0 ? `Next round forced to ${val.toFixed(2)}x!` : 'Provably Fair automatic mode reactivated.');
       loadStats();
     });
 
@@ -398,7 +398,7 @@
         headers,
         body: JSON.stringify({ rtp, betting_countdown_ms: countdown })
       });
-      alert('Configurações salvas com sucesso!');
+      alert('Settings saved successfully!');
       loadStats();
     });
 
@@ -423,7 +423,7 @@
     function copySessionUrl() {
       const url = document.getElementById('session_url_display').textContent;
       navigator.clipboard.writeText(url);
-      alert('URL da sessão copiada para a área de transferência!');
+      alert('Session URL copied to clipboard!');
     }
 
     // Polling / Real-time updates
