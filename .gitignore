@@ -1,0 +1,8 @@
+node_modules/
+data/*.db
+data/*.db-wal
+data/*.db-shm
+scripts/gen_plane.out
+*.log
+.DS_Store
+Thumbs.db

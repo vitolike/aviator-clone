@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a519e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Aviator — Instant Crash Game</title>
+<link rel="icon" href="images/favicon.png?v=2" type="image/png" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<link rel="stylesheet" href="styles.css">
+<link rel="modulepreload" href="vendor/pixi.min.mjs">
+<link rel="modulepreload" href="src/main.js">
+<link rel="modulepreload" href="src/config.js">
+<link rel="modulepreload" href="src/core/engine.js">
+<link rel="modulepreload" href="src/core/fair.js">
+<link rel="modulepreload" href="src/core/game.js">
+<link rel="modulepreload" href="src/core/bots.js">
+<link rel="modulepreload" href="src/audio/sfx.js">
+<link rel="modulepreload" href="src/view/textures.js">
+<link rel="modulepreload" href="src/view/ui.js">
+<link rel="modulepreload" href="src/view/chrome.js">
+<link rel="modulepreload" href="src/view/flight.js">
+<link rel="modulepreload" href="src/view/feed.js">
+<link rel="modulepreload" href="src/view/scene.js">
+</head>
+<body>
+
+<!--====== TOPBAR (SLIM AUTHENTIC SPRIBE) ======-->
+<header id="aviator-header">
+  <div class="topbar-left" id="header_logo_btn">
+    <img src="images/logo.svg" class="topbar-logo" alt="Aviator" />
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-balance">
+      <span class="bal-num" id="wallet_balance_num">30,000.00</span>
+      <span class="bal-cur" id="wallet_balance_cur">USD</span>
+    </div>
+    <div class="btn-group">
+      <button type="button" class="topbar-menu-btn" id="menu_toggle_btn" title="Open Game Menu" aria-label="Menu">
+        <span class="material-symbols-outlined menu-icon">menu</span>
+      </button>
+
+      <!-- Dropdown Menu -->
+      <ul class="profile-dropdown" id="profile_dropdown">
+        <li class="profile-head">
+          <div class="profile-head-info">
+            <img src="images/avtar/av-1.png" class="avtar-ico" id="dropdown_avatar_img" alt="Player Avatar" title="Click to change avatar" />
+            <div>
+              <div class="profile-name" id="dropdown_user_email">Demo</div>
+            </div>
+          </div>
+          <button type="button" class="change-avatar-btn" id="change_avatar_btn"><span class="material-symbols-outlined">account_circle</span><span>Change<br>Avatar</span></button>
+        </li>
+        <li>
+          <div class="menu-item-row">
+            <div><span class="material-symbols-outlined ico">volume_up</span>Sound</div>
+            <label class="form-switch">
+              <input type="checkbox" id="sound_switch" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </li>
+        <li>
+          <div class="menu-item-row">
+            <div><span class="material-symbols-outlined ico">music_note</span>Music</div>
+            <label class="form-switch">
+              <input type="checkbox" id="music_switch" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </li>
+        <li>
+          <div class="menu-item-row">
+            <div><span class="material-symbols-outlined ico">mode_fan</span>Animation</div>
+            <label class="form-switch">
+              <input type="checkbox" id="animation_switch" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </li>
+        <li class="divider"></li>
+        <li><a href="#" class="menu-link" id="menu_free_bets_link"><span class="material-symbols-outlined ico">star</span>Free Bets</a></li>
+        <li><a href="#" class="menu-link" id="menu_history_link"><span class="material-symbols-outlined ico">history</span>My Bet History</a></li>
+        <li><a href="#" class="menu-link" id="menu_limits_link"><span class="material-symbols-outlined ico">payments</span>Game Limits</a></li>
+        <li>
+          <a href="javascript:void(0)" class="menu-link" id="menu_rules_link">
+            <span class="material-symbols-outlined ico">help</span>How To Play
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0)" class="menu-link" id="menu_game_rules_link"><span class="material-symbols-outlined ico">description</span>Game Rules</a>
+        </li>
+        <li>
+          <a href="javascript:void(0)" class="menu-link" id="menu_fair_link">
+            <span class="material-symbols-outlined ico">verified_user</span>Provably Fair Settings
+          </a>
+        </li>
+        <li class="menu-home"><a href="#" class="menu-link" id="menu_home_link"><span class="material-symbols-outlined ico">home</span>Home</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<!-- Game Canvas Container -->
+<div id="game"></div>
+
+<!-- Preloader -->
+<div id="loading">
+  <span>Connection..</span>
+</div>
+
+<!--====== GAME RULES MODAL ======-->
+<div class="aviator-modal-backdrop" id="game_rule_modal">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h5 class="modal-title">
+        <span class="material-symbols-outlined" style="color: #e50539;">help</span>
+        GAME RULES
+      </h5>
+      <button type="button" class="modal-close-btn" id="close_rule_modal_btn">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="rules-intro">
+        Aviator is a new generation of iGaming entertainment. You can win many times more, in seconds!
+        Aviator is built on a provably fair system, which is currently the only real guarantee of honesty in the gambling industry.
+      </p>
+
+      <h6 class="rules-section-title">HOW TO PLAY</h6>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube-nocookie.com/embed/PZejs3XDCSY?playsinline=1" title="How to play Aviator" allowfullscreen></iframe>
+      </div>
+
+      <h6 class="rules-section-title">Aviator is as easy to play as 1-2-3:</h6>
+      <div class="steps-container">
+        <div class="step">
+          <div class="step-num">01</div>
+          <img src="images/step-01.png" class="step-bg-img" alt="Step 01: Bet before takeoff" />
+          <div class="step-text">
+            <span>BET</span> before take-off
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <img src="images/step-02.png" class="step-bg-img" alt="Step 02: Watch multiplier rise" />
+          <div class="step-text">
+            <span>WATCH</span> as your Lucky Plane takes off and your winnings increase.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <img src="images/step-03.png" class="step-bg-img" alt="Step 03: Cash out" />
+          <div class="step-text">
+            <span>CASH OUT</span> before the plane flies away to multiply your bet!
+          </div>
+        </div>
+      </div>
+
+      <p style="color: #d2d2d2; margin-bottom: 12px;">
+        Remember: if you did not Cash Out before the Lucky Plane flies away, your bet will be lost. Aviator is pure excitement! Risk and win. It’s all in your hands!
+      </p>
+
+      <h6 class="rules-section-title">GAME DETAILS</h6>
+      <ul class="list-ul">
+        <li>The win multiplier starts at 1.00x and grows as the Lucky Plane climbs higher.</li>
+        <li>Your winnings are calculated as your bet amount multiplied by the Cash Out multiplier.</li>
+        <li>Before each round, our cryptographically secure Provably Fair algorithm generates the multiplier at which the plane flies away.</li>
+      </ul>
+
+      <h6 class="rules-section-title">GAME FUNCTIONS</h6>
+      <h6 style="color: #ffffff; font-size: 13.5px; font-weight: 700; margin-top: 10px;">Bet & Cash Out</h6>
+      <ul class="list-ul">
+        <li>Select your stake or quick chips ($1, $2, $5, $10) and press the green "Bet" button.</li>
+        <li>You can place two independent bets simultaneously by toggling the second bet panel (+).</li>
+        <li>Press "Cash Out" while the plane is airborne to collect your payout instantly.</li>
+      </ul>
+
+      <h6 style="color: #ffffff; font-size: 13.5px; font-weight: 700; margin-top: 10px;">Auto Play & Auto Cash Out</h6>
+      <ul class="list-ul">
+        <li>Auto Bet automatically places bets every round with your selected bet parameters.</li>
+        <li>Auto Cash Out collects your winnings automatically the moment the multiplier reaches your specified threshold.</li>
+      </ul>
+
+      <h6 style="color: #ffffff; font-size: 13.5px; font-weight: 700; margin-top: 10px;">Provably Fair & RTP</h6>
+      <ul class="list-ul">
+        <li>Overall theoretical Return to Player (RTP) is 97.00%.</li>
+        <li>Outcomes are 100% transparent and verified using SHA-256 server & client seed hashes.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!--====== AVATAR SELECTION MODAL ======-->
+<div class="aviator-modal-backdrop" id="avatar_modal">
+  <div class="modal-dialog modal-dialog-sm">
+    <div class="modal-header">
+      <h5 class="modal-title">
+        <span class="material-symbols-outlined" style="color: #ffba00;">account_circle</span>
+        CHOOSE GAME AVATAR
+      </h5>
+      <button type="button" class="modal-close-btn" id="close_avatar_modal_btn">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 12.5px; color: #a0a2a8; margin-bottom: 12px;">
+        Choose your personal pilot avatar. It will appear on your profile, in the topbar, and on your active bets!
+      </p>
+      <div class="avatar-grid" id="avatar_grid">
+        <!-- 72 avatars populated dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="src/main.js?v=4"></script>
+</body>
+</html>

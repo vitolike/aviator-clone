@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aviator — Admin Console & Seamless Manager</title>
+  <link rel="icon" href="/images/logo.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    :root {
+      --bg: #0b0c0e;
+      --card-bg: #141518;
+      --card-border: #22242b;
+      --accent-red: #e50539;
+      --accent-green: #28a909;
+      --accent-cyan: #34b4ff;
+      --accent-purple: #ab57ff;
+      --text: #ffffff;
+      --text-dim: #8e929b;
+      --text-muted: #5e616a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 24px; min-height: 100vh; }
+    
+    /* Top Navigation */
+    .topbar { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 16px; margin-bottom: 24px; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand img { height: 28px; }
+    .brand-title { font-size: 16px; font-weight: 800; letter-spacing: 1px; color: #fff; text-transform: uppercase; }
+    .brand-subtitle { font-size: 11px; color: var(--text-dim); font-weight: 500; }
+    
+    .live-badge { display: flex; align-items: center; gap: 8px; background: #1a1c22; padding: 6px 14px; border-radius: 20px; border: 1px solid #2d3038; font-size: 12px; font-weight: 700; }
+    .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+    .pulse-dot.flying { background: var(--accent-cyan); box-shadow: 0 0 8px var(--accent-cyan); }
+    .pulse-dot.crashed { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
+
+    /* KPI Grid */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; position: relative; overflow: hidden; }
+    .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-red); }
+    .kpi-card.green::before { background: var(--accent-green); }
+    .kpi-card.cyan::before { background: var(--accent-cyan); }
+    .kpi-card.purple::before { background: var(--accent-purple); }
+    .kpi-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+    .kpi-value { font-size: 24px; font-weight: 900; color: #fff; }
+    .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+    /* Sections Layout */
+    .dashboard-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    @media (max-width: 1000px) { .dashboard-row { grid-template-columns: 1fr; } }
+
+    .panel-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 20px; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .panel-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: #fff; }
+    .panel-title span { color: var(--accent-red); font-size: 20px; }
+
+    /* Controls & Forms */
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 6px; font-weight: 600; }
+    .form-input, .form-select { width: 100%; background: #0c0d10; border: 1px solid #2a2d36; color: #fff; border-radius: 8px; padding: 10px 12px; font-size: 13.5px; outline: none; transition: border-color 0.2s; }
+    .form-input:focus, .form-select:focus { border-color: var(--accent-red); }
+    
+    .btn { background: var(--accent-red); color: #fff; border: none; border-radius: 8px; padding: 10px 18px; font-size: 13.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: opacity 0.2s; }
+    .btn:hover { opacity: 0.9; }
+    .btn-green { background: var(--accent-green); }
+    .btn-secondary { background: #22242c; color: #d0d2d8; }
+    .btn-secondary:hover { background: #2c2f3a; }
+    .btn-block { width: 100%; justify-content: center; }
+
+    /* Quick Preset Buttons */
+    .preset-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; margin-bottom: 14px; }
+    .preset-pill { background: #191b22; border: 1px solid #2d303b; color: #cfd2db; border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+    .preset-pill:hover, .preset-pill.active { background: var(--accent-red); color: #fff; border-color: var(--accent-red); }
+
+    /* Session Output Box */
+    .session-box { margin-top: 14px; background: #0a0b0d; border: 1px dashed #2f333e; border-radius: 8px; padding: 12px; display: none; }
+    .session-url { font-family: monospace; font-size: 12px; color: var(--accent-cyan); word-break: break-all; margin-bottom: 10px; }
+    .session-actions { display: flex; gap: 8px; }
+
+    /* Tables */
+    .table-responsive { overflow-x: auto; max-height: 380px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    th { text-align: left; padding: 10px 12px; color: var(--text-dim); border-bottom: 1px solid var(--card-border); background: #121316; font-weight: 700; position: sticky; top: 0; }
+    td { padding: 10px 12px; border-bottom: 1px solid #1a1c22; color: #d4d6dc; }
+    tr:hover td { background: #16181d; }
+    .badge-status { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; }
+    .badge-cashed { background: rgba(40, 169, 9, 0.2); color: #3be212; border: 1px solid #28a909; }
+    .badge-lost { background: rgba(229, 5, 57, 0.2); color: #ff4d6d; border: 1px solid #e50539; }
+    .badge-placed { background: rgba(52, 180, 255, 0.2); color: #34b4ff; border: 1px solid #34b4ff; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="brand">
+      <img src="/images/logo.svg" alt="Aviator">
+      <div>
+        <div class="brand-title">Admin Console & Seamless Engine</div>
+        <div class="brand-subtitle">High-Performance SQLite Ledger & Real-Time Controller</div>
+      </div>
+    </div>
+    <div class="live-badge" id="live_status_badge">
+      <div class="pulse-dot" id="live_dot"></div>
+      <span id="live_round_text">Loading Round...</span>
+    </div>
+  </header>
+
+  <!-- KPI Metrics -->
+  <section class="kpi-grid">
+    <div class="kpi-card green">
+      <div class="kpi-label">Gross Gaming Revenue (GGR)</div>
+      <div class="kpi-value" id="kpi_ggr">$0.00</div>
+      <div class="kpi-sub">Total Wagered - Total Paid</div>
+    </div>
+    <div class="kpi-card cyan">
+      <div class="kpi-label">Total Volume Apostado</div>
+      <div class="kpi-value" id="kpi_wagered">$0.00</div>
+      <div class="kpi-sub" id="kpi_bets_count">0 apostas registradas</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-label">RTP Real Calculado</div>
+      <div class="kpi-value" id="kpi_real_rtp">97.00%</div>
+      <div class="kpi-sub" id="kpi_cfg_rtp">RTP Teórico: 97.0%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Rodadas & Jogadores</div>
+      <div class="kpi-value" id="kpi_users_count">0</div>
+      <div class="kpi-sub" id="kpi_rounds_count">0 rodadas concluídas</div>
+    </div>
+  </section>
+
+  <!-- 2 Columns: Live Control & Session Generator -->
+  <div class="dashboard-row">
+    
+    <!-- Game Control Panel -->
+    <div class="panel-card">
+      <div class="panel-header">
+        <h2 class="panel-title"><span class="material-symbols-outlined">tune</span> Controle Ao Vivo da Rodada</h2>
+        <span id="force_indicator" style="font-size: 11px; color: var(--accent-green); font-weight: 700;">Modo: Provably Fair Auto</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Forçar Multiplicador da Próxima Rodada (Crash Force):</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="number" step="0.01" min="1.00" class="form-input" id="force_mult_input" placeholder="Ex: 2.50 ou 1.00 (Instant Crash)">
+          <button type="button" class="btn" id="btn_apply_force">Aplicar</button>
+        </div>
+        <div class="preset-row">
+          <button type="button" class="preset-pill" onclick="setForceVal('1.00')">1.00x (Crash Imediato)</button>
+          <button type="button" class="preset-pill" onclick="setForceVal('1.25')">1.25x</button>
+          <button type="button" class="preset-pill" onclick="setForceVal('2.00')">2.00x</button>
+          <button type="button" class="preset-pill" onclick="setForceVal('5.00')">5.00x</button>
+          <button type="button" class="preset-pill" onclick="setForceVal('10.00')">10.00x</button>
+          <button type="button" class="preset-pill" onclick="setForceVal('0')">Resetar (Auto)</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="form-group">
+          <label class="form-label">RTP Global do Sistema:</label>
+          <select class="form-select" id="setting_rtp">
+            <option value="98.0">98.0% (Alto Retorno)</option>
+            <option value="97.0" selected>97.0% (Padrão Oficial Spribe)</option>
+            <option value="95.0">95.0%</option>
+            <option value="92.0">92.0%</option>
+            <option value="88.0">88.0% (Margem da Casa Aumentada)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tempo de Aposta (Countdown):</label>
+          <select class="form-select" id="setting_countdown">
+            <option value="4000">4 Segundos</option>
+            <option value="5000" selected>5 Segundos (Padrão)</option>
+            <option value="7000">7 Segundos</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-secondary btn-block" id="btn_save_settings">Salvar Configurações Globais</button>
+    </div>
+
+    <!-- Seamless Session Generator -->
+    <div class="panel-card">
+      <div class="panel-header">
+        <h2 class="panel-title"><span class="material-symbols-outlined">person_add</span> Criador de Sessões de Jogador</h2>
+        <span style="font-size: 11px; color: var(--text-dim);">API Seamless / Integrador</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nome do Jogador / Apelido:</label>
+        <input type="text" class="form-input" id="sess_username" value="Piloto_Vip">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="form-group">
+          <label class="form-label">Saldo Inicial:</label>
+          <input type="number" class="form-input" id="sess_balance" value="1000.00" step="10">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Moeda:</label>
+          <select class="form-select" id="sess_currency">
+            <option value="USD" selected>USD ($)</option>
+            <option value="BRL">BRL (R$)</option>
+            <option value="EUR">EUR (€)</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-green btn-block" id="btn_create_session">
+        <span class="material-symbols-outlined">rocket_launch</span> Gerar Sessão e Link do Jogo
+      </button>
+
+      <div class="session-box" id="session_result_box">
+        <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 4px;">URL da Sessão Gerada:</div>
+        <div class="session-url" id="session_url_display"></div>
+        <div class="session-actions">
+          <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="copySessionUrl()">Copiar Link</button>
+          <a href="#" target="_blank" class="btn btn-green" style="flex: 1; text-decoration: none; justify-content: center;" id="session_play_link">Jogar Agora</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Historical Rounds & Provably Fair Audit Table -->
+  <div class="panel-card" style="margin-bottom: 24px;">
+    <div class="panel-header">
+      <h2 class="panel-title"><span class="material-symbols-outlined">history</span> Auditoria de Rodadas & Provably Fair</h2>
+      <button type="button" class="btn btn-secondary" onclick="loadRounds()">Atualizar</button>
+    </div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID Rodada</th>
+            <th>Multiplicador Final</th>
+            <th>Status</th>
+            <th>Hash SHA-256 (Compromisso)</th>
+            <th>Server Seed (Revelado)</th>
+            <th>Nonce</th>
+            <th>Data/Hora</th>
+          </tr>
+        </thead>
+        <tbody id="rounds_tbody">
+          <tr><td colspan="7" style="text-align:center;">Carregando rodadas...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Bets Ledger -->
+  <div class="panel-card">
+    <div class="panel-header">
+      <h2 class="panel-title"><span class="material-symbols-outlined">payments</span> Livro Razão de Apostas (Live Ledger)</h2>
+      <button type="button" class="btn btn-secondary" onclick="loadBets()">Atualizar</button>
+    </div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID Aposta</th>
+            <th>Jogador</th>
+            <th>Rodada</th>
+            <th>Valor Apostado</th>
+            <th>Saque (X)</th>
+            <th>Prêmio Pago</th>
+            <th>Status</th>
+            <th>Horário</th>
+          </tr>
+        </thead>
+        <tbody id="bets_tbody">
+          <tr><td colspan="8" style="text-align:center;">Carregando apostas...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_KEY = 'admin123';
+    const headers = { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_KEY };
+
+    function fmt(n) {
+      return Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/admin/stats', { headers });
+        const data = await res.json();
+        if (!data.success) return;
+
+        const { stats, live } = data;
+        document.getElementById('kpi_ggr').textContent = `$${fmt(stats.ggr)}`;
+        document.getElementById('kpi_wagered').textContent = `$${fmt(stats.totalWagered)}`;
+        document.getElementById('kpi_bets_count').textContent = `${stats.totalBets} apostas registradas`;
+        document.getElementById('kpi_real_rtp').textContent = `${stats.realRtp.toFixed(2)}%`;
+        document.getElementById('kpi_cfg_rtp').textContent = `RTP Teórico: ${stats.configuredRtp}%`;
+        document.getElementById('kpi_users_count').textContent = `${stats.totalUsers} jogadores`;
+        document.getElementById('kpi_rounds_count').textContent = `${stats.totalRounds} rodadas concluídas`;
+
+        // Live badge
+        const dot = document.getElementById('live_dot');
+        const text = document.getElementById('live_round_text');
+        dot.className = `pulse-dot ${live.phase.toLowerCase()}`;
+        text.textContent = `Rodada #${live.roundId} | ${live.phase} ${live.phase === 'FLYING' ? live.mult.toFixed(2) + 'x' : ''}`;
+
+        // Force indicator
+        const ind = document.getElementById('force_indicator');
+        if (stats.forceNextCrash > 0) {
+          ind.textContent = `PRÓXIMO MULTIPLICADOR TRAVADO EM ${stats.forceNextCrash.toFixed(2)}x!`;
+          ind.style.color = 'var(--accent-red)';
+        } else {
+          ind.textContent = 'Modo: Provably Fair Auto';
+          ind.style.color = 'var(--accent-green)';
+        }
+      } catch (e) {
+        console.error('Error loading stats:', e);
+      }
+    }
+
+    async function loadRounds() {
+      try {
+        const res = await fetch('/api/admin/rounds?limit=30', { headers });
+        const data = await res.json();
+        if (!data.success) return;
+
+        const tbody = document.getElementById('rounds_tbody');
+        tbody.innerHTML = data.rounds.map(r => `
+          <tr>
+            <td><strong>#${r.id}</strong></td>
+            <td style="color: ${r.crash_multiplier >= 2 ? '#ab57ff' : '#34b4ff'}; font-weight: 800;">
+              ${r.crash_multiplier.toFixed(2)}x
+            </td>
+            <td><span class="badge-status badge-${r.status}">${r.status}</span></td>
+            <td style="font-family: monospace; font-size: 11px;">${r.hash.slice(0, 16)}...</td>
+            <td style="font-family: monospace; font-size: 11px;">${r.server_seed ? r.server_seed.slice(0, 16) + '...' : '—'}</td>
+            <td>${r.nonce}</td>
+            <td>${new Date(r.started_at).toLocaleTimeString('pt-BR')}</td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error('Error loading rounds:', e);
+      }
+    }
+
+    async function loadBets() {
+      try {
+        const res = await fetch('/api/admin/bets?limit=30', { headers });
+        const data = await res.json();
+        if (!data.success) return;
+
+        const tbody = document.getElementById('bets_tbody');
+        tbody.innerHTML = data.bets.map(b => `
+          <tr>
+            <td style="font-family: monospace; font-size: 11px;">${b.id.slice(0, 8)}...</td>
+            <td><strong>${b.username}</strong></td>
+            <td>#${b.round_id}</td>
+            <td>$${fmt(b.amount)}</td>
+            <td style="font-weight: 700; color: ${b.cashout_mult > 0 ? '#34c60c' : '#747781'}">
+              ${b.cashout_mult > 0 ? b.cashout_mult.toFixed(2) + 'x' : '—'}
+            </td>
+            <td style="font-weight: 700; color: ${b.win_amount > 0 ? '#3be212' : '#ffffff'}">
+              $${fmt(b.win_amount)}
+            </td>
+            <td><span class="badge-status badge-${b.status}">${b.status}</span></td>
+            <td>${new Date(b.created_at).toLocaleTimeString('pt-BR')}</td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error('Error loading bets:', e);
+      }
+    }
+
+    function setForceVal(val) {
+      document.getElementById('force_mult_input').value = val;
+    }
+
+    document.getElementById('btn_apply_force').addEventListener('click', async () => {
+      const val = parseFloat(document.getElementById('force_mult_input').value) || 0;
+      await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ force_next_crash: val })
+      });
+      alert(val > 0 ? `Próxima rodada forçada para ${val.toFixed(2)}x!` : 'Modo automático Provably Fair reativado.');
+      loadStats();
+    });
+
+    document.getElementById('btn_save_settings').addEventListener('click', async () => {
+      const rtp = document.getElementById('setting_rtp').value;
+      const countdown = document.getElementById('setting_countdown').value;
+      await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ rtp, betting_countdown_ms: countdown })
+      });
+      alert('Configurações salvas com sucesso!');
+      loadStats();
+    });
+
+    document.getElementById('btn_create_session').addEventListener('click', async () => {
+      const username = document.getElementById('sess_username').value;
+      const balance = parseFloat(document.getElementById('sess_balance').value) || 1000;
+      const currency = document.getElementById('sess_currency').value;
+
+      const res = await fetch('/api/admin/sessions', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ username, balance, currency })
+      });
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('session_result_box').style.display = 'block';
+        document.getElementById('session_url_display').textContent = data.launchUrl;
+        document.getElementById('session_play_link').href = data.launchUrl;
+      }
+    });
+
+    function copySessionUrl() {
+      const url = document.getElementById('session_url_display').textContent;
+      navigator.clipboard.writeText(url);
+      alert('URL da sessão copiada para a área de transferência!');
+    }
+
+    // Polling / Real-time updates
+    loadStats();
+    loadRounds();
+    loadBets();
+    setInterval(loadStats, 2000);
+    setInterval(loadRounds, 6000);
+    setInterval(loadBets, 4000);
+  </script>
+</body>
+</html>

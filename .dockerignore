@@ -1,0 +1,12 @@
+.git
+.gitignore
+.agents
+scripts
+tools
+README.md
+Dockerfile
+.dockerignore
+node_modules
+data/*.db
+data/*.db-wal
+data/*.db-shm
