@@ -339,3 +339,4 @@ node scripts/test_api.mjs
 4. **"As-Is" Warranty**:
    * This project is provided on an **"AS IS" and "AS AVAILABLE"** basis, without warranties, guarantees, or conditions of any kind, whether express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, non-infringement, or system reliability.
 
+** If you require authentic game licenses, register at https://games2api.xyz to browse our catalog of more than 16,000 original games available on demand. **
