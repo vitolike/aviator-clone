@@ -38,7 +38,7 @@ export class BetPanel extends Container {
 
     // Amount row (Stepper)
     this.amtBg = new Graphics();
-    this.amtText = txt('1.00', 18, 0xffffff, '800');
+    this.amtText = txt('1.00', 20, 0xffffff, '800');
     this.amtText.anchor.set(0.5);
     this.amtHit = new Container();
     this.amtHit.eventMode = 'static';

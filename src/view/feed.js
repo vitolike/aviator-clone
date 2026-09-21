@@ -136,6 +136,23 @@ export class Feed extends Container {
 
     this.addChild(this.subStrip);
 
+    // Round Result card (Previous tab header, like the official client)
+    this.roundCard = new Container();
+    this.roundBg = new Graphics();
+    this.roundLabel = txt('Round Result', 13, 0x8e9299, '400');
+    this.roundLabel.anchor.set(0.5, 0);
+    this.roundValue = txt('—', 26, 0xab57ff, '800');
+    this.roundValue.anchor.set(0.5, 0);
+    this.roundCard.addChild(this.roundBg, this.roundLabel, this.roundValue);
+    this.roundCard.visible = false;
+    this.addChild(this.roundCard);
+
+    // Empty-state message
+    this.emptyText = txt('No bets yet', 14, 0x8e9299, '500');
+    this.emptyText.anchor.set(0.5);
+    this.emptyText.visible = false;
+    this.addChild(this.emptyText);
+
     // Table Header (Player | Bet USD | X | Win USD)
     this.head = new Container();
     this.h1 = txt('Player', 13, 0x888d95, '400');
@@ -210,7 +227,7 @@ export class Feed extends Container {
     if (this.tab === 'all') return this.bots.list;
     if (this.tab === 'mine') {
       return this.game.myBets.map((b) => ({
-        name: new Date(b.t).toLocaleTimeString('en-US', { hour12: false }),
+        name: b.nonce != null ? `#${b.nonce}` : new Date(b.t).toLocaleTimeString('en-US', { hour12: false }),
         color: 0xffd60a,
         avatarId: 99,
         amount: b.amount,
@@ -275,9 +292,9 @@ export class Feed extends Container {
       const pillRadius = rowH / 2;
       const isCashed = d.cashed && !d.top;
 
-      // Capsule Background
+      // Capsule Background (Previous-tab rows stay dark like the reference)
       r.bg.clear();
-      if (isCashed) {
+      if (isCashed && !d.mine) {
         // Dark olive green translucent pill with clean green outline
         const bgCol = d.mine ? 0x183815 : 0x142410;
         const lineCol = d.mine ? 0x3db82a : 0x28551c;
@@ -312,9 +329,9 @@ export class Feed extends Container {
       r.amount.style.fill = d.lost ? 0x6e717a : 0xffffff;
       r.amount.position.set(w * 0.475, rowH / 2);
 
-      // Multiplier (X) and Win USD
+      // Multiplier (X) and Win USD (own previous bets always show values)
       r.flashG.clear();
-      if (isCashed && d.m) {
+      if ((isCashed || d.mine) && d.m) {
         r.mult.text = `${d.m.toFixed(2)}x`;
 
         // Color scheme matching Aviator screenshot: <2x cyan, 2x-10x purple, >=10x pink
@@ -340,6 +357,13 @@ export class Feed extends Container {
           r.mult.scale.set(1);
           r.win.scale.set(1);
         }
+      } else if (d.mine) {
+        // Lost own bet: no multiplier, but keep the 0.00 win like the reference
+        r.mult.text = '';
+        r.win.text = fmt(d.win || 0);
+        r.win.style.fill = 0xffffff;
+        r.mult.scale.set(1);
+        r.win.scale.set(1);
       } else if (d.top) {
         r.mult.text = `${d.m.toFixed(2)}x`;
         r.mult.style.fill = multColor(d.m);
@@ -360,6 +384,18 @@ export class Feed extends Container {
 
     // Update Sub-Header Stats
     const st = this.bots.stats;
+    this.roundCard.visible = this.tab === 'mine';
+    if (this.tab === 'mine') {
+      // Round Result header: last completed round multiplier
+      const last = this.engine.history[0];
+      if (last) {
+        this.roundValue.text = `${last.m.toFixed(2)}x`;
+        this.roundValue.style.fill = multColor(last.m);
+      } else {
+        this.roundValue.text = '—';
+        this.roundValue.style.fill = 0x8e9299;
+      }
+    }
     if (this.tab === 'all') {
       this.betsCountNum.text = `${st.cashed}/${st.total}`;
       this.betsCountLabel.text = ' Bets';
@@ -375,17 +411,13 @@ export class Feed extends Container {
       this.totalWinVal.visible = true;
       this.totalWinLabel.visible = true;
     } else if (this.tab === 'mine') {
-      this.betsCountNum.text = `${this.data.length}`;
-      this.betsCountLabel.text = ' Bets Recorded';
-      this.betsCountLabel.position.set(this.betsCountNum.x + this.betsCountNum.width, this.betsCountNum.y);
-
       this.targetProgress = 0;
       this.currentProgress = 0;
       this.targetTotalWin = 0;
 
       this.subAvatars.visible = false;
-      this.betsCountNum.visible = true;
-      this.betsCountLabel.visible = true;
+      this.betsCountNum.visible = false;
+      this.betsCountLabel.visible = false;
       this.progressBar.visible = false;
       this.totalWinVal.visible = false;
       this.totalWinLabel.visible = false;
@@ -406,6 +438,10 @@ export class Feed extends Container {
     }
 
     this.drawProgressBar();
+    this.emptyText.visible = this.data.length === 0;
+    if (this.data.length === 0) {
+      this.emptyText.text = this.tab === 'mine' ? 'No previous bets yet' : (this.tab === 'top' ? 'No rounds yet' : 'No bets yet');
+    }
   }
 
   drawProgressBar() {
@@ -474,7 +510,7 @@ export class Feed extends Container {
     this.innerW = tw;
 
     // Card background with rounded corners matching screenshot
-    panelBg(this.bg, w, h, 24, 0x1b1c1d, null);
+    panelBg(this.bg, w, h, 20, 0x1b1c1d, null);
 
     // Tabs under top padding
     this.tabsContainer.position.set(pad, pad);
@@ -508,6 +544,13 @@ export class Feed extends Container {
     this.h3.position.set(tw * 0.72, 20);
     this.h4.position.set(tw - 10, 20);
 
+    // Round Result card fills the sub-strip area on the Previous tab
+    const cardH = hy - sy - 8;
+    this.roundCard.position.set(pad, sy);
+    panelBg(this.roundBg, tw, cardH, 12, 0x101114, null);
+    this.roundLabel.position.set(tw / 2, 6);
+    this.roundValue.position.set(tw / 2, 22);
+
     // Footer at bottom
     const footerH = 42;
     const fy = h - footerH;
@@ -528,6 +571,7 @@ export class Feed extends Container {
     const scrollH = fy - scrollY - 4;
     this.scroll.position.set(pad, scrollY);
     this.scroll.resize(tw, scrollH);
+    this.emptyText.position.set(pad + tw / 2, scrollY + Math.max(40, scrollH / 2));
     this.pool.forEach((r) => { r.visible = false; });
     this.render();
   }

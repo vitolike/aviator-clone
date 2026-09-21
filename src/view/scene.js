@@ -219,7 +219,7 @@ export class Scene extends Container {
       const sideW = Math.min(512, Math.max(L.sideW, w * 0.265));
       const bodyY = L.topbarH + gap;
       const bodyH = h - bodyY - gap;
-      this.feed.position.set(0, bodyY);
+      this.feed.position.set(gap, bodyY);
       this.feed.resize(sideW, bodyH, L);
       this.feed.visible = true;
 

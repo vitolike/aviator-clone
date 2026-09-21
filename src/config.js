@@ -69,10 +69,10 @@ export const LAYOUT_PC = {
   designW: 1280,
   designH: 800,
   topbarH: 0,
-  historyH: 42,
+  historyH: 36,
   sideW: 320,
-  gap: 8,
-  betPanelH: 136,
+  gap: 10,
+  betPanelH: 172,
   // Plane cruising position ratios inside the flight arena
   planeX: 0.74,
   planeY: 0.30,
@@ -115,4 +115,4 @@ export function pickLayout(w, h) {
   return { mobile, L: { ...(mobile ? LAYOUT_MOBILE : LAYOUT_PC) } };
 }
 
-export const FONT = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+export const FONT = 'Roboto, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif';

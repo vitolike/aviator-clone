@@ -175,6 +175,7 @@ export class FlightView extends Container {
     this.nrRays.height = h;
     this.nrRays.position.set(w / 2, h / 2);
     const lockupScale = Math.min(1, Math.min((w * 0.82) / 375, (h * 0.72) / 308));
+    this.nrScale = lockupScale;
     this.nrLockup.scale.set(lockupScale);
     this.nrLockup.position.set(w / 2, h / 2);
 
@@ -197,7 +198,8 @@ export class FlightView extends Container {
 
   drawBg() {
     const { w, h } = this;
-    panelBg(this.bgG, w, h, 12, 0x090a0d, 0x1f2126);
+    const r = 18;
+    panelBg(this.bgG, w, h, r, 0x090a0d, 0x1f2126);
     this.stars.clear();
     for (const s of this._stars) {
       this.stars.circle(s.x * w, s.y * h * 0.92, s.r).fill({ color: 0xffffff, alpha: 0.28 });
@@ -310,6 +312,7 @@ export class FlightView extends Container {
       this.fillMask.clear();
       this.mult.text = '';
       this.status.text = '';
+      this.setWaitVisible(true);
       this.drawWait();
 
     }
@@ -334,8 +337,10 @@ export class FlightView extends Container {
 
   drawWait() {
     const { w, h, engine } = this;
-    const bw = Math.min(w * 0.18, 250), bh = 5;
-    const bx = (w - bw) / 2, by = h / 2 + 22;
+    const bw = Math.min(w * 0.34, 300), bh = 6;
+    const bx = (w - bw) / 2;
+    // Below the UFC/Official lockup image (lockup half-height ~142 * scale)
+    const by = h / 2 + 142 * (this.nrScale || 1) + 20;
     panelBg(this.barBg, bw, bh, 3, 0x222327, null);
     this.barBg.position.set(bx, by);
     const p = 1 - engine.bettingProgress;

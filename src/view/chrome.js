@@ -103,7 +103,7 @@ export class HistoryBar extends Container {
   pill(round) {
     const c = new Container();
     const m = round.m;
-    const t = txt(`${m.toFixed(2)}x`, 14, multColor(m), '500');
+    const t = txt(`${m.toFixed(2)}x`, 13, multColor(m), '500');
     t.anchor.set(0.5);
     const w = t.width + 18, h = 22;
     t.position.set(w / 2, h / 2);
@@ -130,16 +130,16 @@ export class HistoryBar extends Container {
     panelBg(this.bg, w, boxH, 0, 0x0d0d0e, null);
     this.maskG.clear();
     this.maskG.rect(0, 0, w - 34, boxH).fill(0xffffff);
-    let x = 7, y = (h - 22) / 2, row = 0;
+    let x = 12, y = (h - 22) / 2, row = 0;
     for (const p of this.pills) {
       if (x + p._w > w - 40) {
         row += 1;
         if (row >= rows) { p.visible = false; continue; }
-        x = 7; y += 24;
+        x = 12; y += 24;
       }
       p.visible = true;
       p.position.set(x, y);
-      x += p._w;
+      x += p._w + 6;
     }
     this.moreG.clear();
     this.moreG.roundRect(-15, -11, 30, 22, 11).fill(0x2a2b2e);
