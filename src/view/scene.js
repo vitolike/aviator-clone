@@ -9,6 +9,7 @@ import { BetPanel } from './betpanel.js';
 import { Keypad } from './keypad.js';
 import { Modal } from './modals.js';
 import { DevTools } from '../dev/devtools.js';
+import { ToastManager } from './toaster.js';
 import { txt, panelBg, fmt } from './ui.js';
 
 export class Scene extends Container {
@@ -44,9 +45,12 @@ export class Scene extends Container {
     this.toast.visible = false;
     this.toastT = 0;
 
+    // Authentic Aviator Win Toast Manager
+    this.toaster = new ToastManager();
+
     this.addChild(this.flight, this.feed, this.history, this.topbar);
     this.panels.forEach((p) => this.addChild(p));
-    this.addChild(this.toast, this.keypad, this.modal);
+    this.addChild(this.toast, this.toaster, this.keypad, this.modal);
 
     this.dev = new DevTools(this);
     this.addChild(this.dev);
@@ -106,8 +110,8 @@ export class Scene extends Container {
     game.on('cashed', ({ slot, m, win }) => {
       sfx.cashOut();
       bots.cashMine(slot.index, m, win);
-      this.panels[slot.index].showFlash(`+${fmt(win)}`);
-      this.showToast(`Cashed out at ${m.toFixed(2)}x Won ${fmt(win)} ${CURRENCY}`);
+      this.panels[slot.index].showFlash(`+${fmt(win)} (${m.toFixed(2)}x)`);
+      this.toaster.showWin({ slotIndex: slot.index, mult: m, win, currency: CURRENCY });
       this.feed.render();
     });
 
@@ -276,6 +280,14 @@ export class Scene extends Container {
       this.feed.visible = true;
     }
 
+    if (this.flightRect) {
+      // Anchor win toast overlapping the history line (official placement)
+      const hx = this.history?.position?.x ?? this.flightRect.x;
+      const hy = this.history?.position?.y ?? this.flightRect.y;
+      const hw = this.history?.w || this.flightRect.w;
+      this.toaster.resize(hx, hy, hw, this.flightRect.h, this.mobile);
+    }
+
     this.keypad.resize(w, h);
     this.modal.layout();
     this.dev.resize(w, h);
@@ -289,6 +301,7 @@ export class Scene extends Container {
     this.feed.update(dt);
     this.modal.update();
     this.dev.update();
+    this.toaster.update(dt);
     if (this.toastT > 0) {
       this.toastT -= dt;
       this.toast.alpha = Math.min(1, this.toastT / 400);

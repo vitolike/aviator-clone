@@ -64,12 +64,15 @@ export class BetPanel extends Container {
     });
     this.addChild(this.mainBtn);
 
-    // Cash out floating text
-    this.flash = txt('', 15, COLORS.gold, '800');
-    this.flash.anchor.set(0.5);
-    this.flash.alpha = 0;
-    this.addChild(this.flash);
-    this.flashT = 0;
+    // Enhanced cash out floating win badge
+    this.winBadge = new Container();
+    this.winBadgeBg = new Graphics();
+    this.winBadgeText = txt('', 13, 0xffffff, '800');
+    this.winBadgeText.anchor.set(0.5);
+    this.winBadge.addChild(this.winBadgeBg, this.winBadgeText);
+    this.winBadge.alpha = 0;
+    this.addChild(this.winBadge);
+    this.winBadgeT = 0;
 
     this.refresh();
   }
@@ -113,8 +116,15 @@ export class BetPanel extends Container {
   }
 
   showFlash(text) {
-    this.flash.text = text;
-    this.flashT = 1400;
+    this.winBadgeText.text = text;
+    const bw = Math.max(130, this.winBadgeText.width + 24);
+    const bh = 26;
+    panelBg(this.winBadgeBg, bw, bh, bh / 2, 0x123405, 0x4eaf11);
+    this.winBadgeText.position.set(bw / 2, bh / 2);
+    this.winBadgeBg.position.set(0, 0);
+    this.winBadge.pivot.set(bw / 2, bh / 2);
+    this.winBadge.position.set(this.btnCenterX || this.w / 2, this.flashY);
+    this.winBadgeT = 1800;
   }
 
   refresh() {
@@ -152,11 +162,14 @@ export class BetPanel extends Container {
 
   update(dt) {
     if (this.slot.state === SLOT.ACTIVE) this.updateMain();
-    if (this.flashT > 0) {
-      this.flashT -= dt;
-      this.flash.alpha = Math.min(1, this.flashT / 400);
-      this.flash.y = this.flashY - (1 - Math.min(1, this.flashT / 1400)) * 14;
-      if (this.flashT <= 0) this.flash.alpha = 0;
+    if (this.winBadgeT > 0) {
+      this.winBadgeT -= dt;
+      const progress = 1 - this.winBadgeT / 1800;
+      this.winBadge.alpha = Math.min(1, this.winBadgeT / 400);
+      this.winBadge.y = this.flashY - Math.sin(Math.min(1, progress * 1.5) * Math.PI / 2) * 20;
+      const s = progress < 0.18 ? 0.8 + (progress / 0.18) * 0.25 : Math.max(1, 1.05 - (progress - 0.18) * 0.08);
+      this.winBadge.scale.set(s);
+      if (this.winBadgeT <= 0) this.winBadge.alpha = 0;
     }
   }
 
@@ -235,8 +248,9 @@ export class BetPanel extends Container {
     this.mainBtn.setFontSize(mobile ? 18 : 22, mobile ? 12 : 14);
     this.mainBtn.position.set(btnX, startY);
 
+    this.btnCenterX = btnX + btnW / 2;
     this.flashY = startY - 14;
-    this.flash.position.set(w / 2, this.flashY);
+    this.winBadge.position.set(this.btnCenterX, this.flashY);
     this.refresh();
   }
 }
